@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dromos &mdash; Yogev Angelovici</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --fg: #111111;
+            --fg-2: #555555;
+            --fg-3: #999999;
+            --bg: #fffefd;
+        }
+
+        body {
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .corner-tl {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.75rem;
+            z-index: 1;
+        }
+
+        .name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .name a {
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav a {
+            font-size: 13px;
+            color: var(--fg-3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: var(--fg);
+        }
+
+        .essay {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 9rem 1.5rem 8rem;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .essay p {
+            margin-bottom: 1.25rem;
+        }
+
+        .essay ul,
+        .essay ol {
+            margin: 0 0 1.25rem 1.25rem;
+        }
+
+        .essay li {
+            margin-bottom: 0.5rem;
+        }
+
+        figure {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        figure img {
+            max-width: 300px;
+            width: 100%;
+        }
+
+        figcaption {
+            font-size: 12px;
+            color: var(--fg-3);
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anim {
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="corner-tl anim">
+        <div class="name"><a href="../">Yogev Angelovici</a></div>
+        <nav class="nav">
+            <a href="../pages.html#about">About</a>
+            <a href="../pages.html#media">Media</a>
+            <a href="../pages.html#writings" class="active">Writings</a>
+        </nav>
+    </div>
+
+    <article class="essay anim">
+        <h1>Dromos</h1>
+
+        <p>Today, the robotics industry has a data problem. The robotics foundation model labs have approximately five orders of magnitude less data to train on than the language model labs.</p>
+
+        <p>Today, humans have an embodiment problem. Every person gets one body in one location. It is hard to transport this body and even harder to change its shape. In 2025, we collectively spent eight trillion dollars on both of these things.</p>
+
+        <p>The solution to both of these problems is a worldwide telexistence network.</p>
+
+        <p>Imagine a human being on one end equipped with audiovisual and haptic feedback equipment (a VR headset and gloves, for example). They are connected over the global network to a humanoid robot at a remote location. With low latency and extensive sensory feedback, they will gain a feeling of presence at the remote location almost indistinguishable from truly being there.</p>
+
+        <figure>
+            <img src="../assets/telesar-vi.png" alt="A humanoid robot beside a seated operator wearing a VR headset and haptic gloves">
+            <figcaption>TELESAR VI, a previous generation of telexistence system</figcaption>
+        </figure>
+
+        <p>This gives human beings a solution to their embodiment problem:</p>
+
+        <ul>
+            <li>They can be anywhere, instantaneously. Any location where a robot is connected to the network is available for them to &lsquo;transport&rsquo; to. The end user no longer has to face the limits of geography.</li>
+            <li>They can take on any embodiment. Speed, strength, and other desirable physical traits can be engineered into the robotic avatars depending on user preference. The end user no longer has to be beholden to the limits of their body.</li>
+        </ul>
+
+        <p>This gives the robotics community a solution to their data problem. Rich sensorimotor and proprioceptive data can be collected from this network and used for training robotics foundation models. This would be the internet scale corpus for robotics.</p>
+
+        <p>Our goal at Dromos is to create the telexistence network. This has three components:</p>
+
+        <ol>
+            <li>Making sensory feedback equipment available to end users.</li>
+            <li>Creating a networking solution for worldwide low-latency teleoperation.</li>
+            <li>Placing desirable robotic bodies at locations of interest.</li>
+        </ol>
+
+        <p>We believe a body should be something you choose, and the world should be one place. Dromos exists to make that true.</p>
+    </article>
+</body>
+</html>
