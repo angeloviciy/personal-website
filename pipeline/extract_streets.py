@@ -19,6 +19,11 @@ OUT = HERE.parent / "assets"
 OUT.mkdir(exist_ok=True)
 
 LON_MIN, LAT_MIN, LON_MAX, LAT_MAX = -122.525, 37.703, -122.350, 37.836
+# Streets north of the Golden Gate Bridge's north anchorage are outside
+# the transit feeds' jurisdiction (no Golden Gate Transit in the data):
+# they'd render as a frozen walking-time blob pinned at the compute cap.
+# Keep the quantization bbox unchanged; just don't emit those vertices.
+LAT_CLIP = 37.8315
 
 MAJOR = {"motorway", "trunk", "primary", "secondary"}
 MINOR = {"tertiary", "residential", "unclassified", "motorway_link",
@@ -66,7 +71,7 @@ class Streets(osmium.SimpleHandler):
         coords = [(n.lon, n.lat) for n in w.nodes if n.location.valid()]
         coords = [
             (lon, lat) for lon, lat in coords
-            if LON_MIN <= lon <= LON_MAX and LAT_MIN <= lat <= LAT_MAX
+            if LON_MIN <= lon <= LON_MAX and LAT_MIN <= lat <= LAT_CLIP
         ]
         if len(coords) < 2:
             return
