@@ -91,33 +91,37 @@
             margin-bottom: 0;
         }
 
+        #about {
+            text-align: left;
+        }
+
         .rule {
             width: 48px;
             border: 0;
             border-top: 1px solid #ddd;
-            margin: 2.5rem auto;
+            margin: 2.5rem auto 2.5rem 0;
         }
 
-        /* Footer, shared by all three views */
-        .footer {
+        /* Contact, top-right corner */
+        .corner-tr {
             position: fixed;
-            bottom: 1.5rem;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 13px;
-            color: var(--fg-3);
+            top: 1.5rem;
+            right: 1.75rem;
+            z-index: 1;
+            text-align: right;
         }
 
-        .footer a {
-            color: var(--fg);
-            text-decoration: underline;
-            text-underline-offset: 2px;
+        .corner-tr a {
+            display: block;
+            font-size: 13px;
+            line-height: 1.9;
+            color: var(--fg-3);
+            text-decoration: none;
             transition: color 0.2s;
         }
 
-        .footer a:hover {
-            color: var(--fg-3);
+        .corner-tr a:hover {
+            color: var(--fg);
         }
 
         #about a {
@@ -192,7 +196,7 @@
 
             <p>In a past life, I was a founding engineer at <a href="https://www.conway.ai/" target="_blank" rel="noopener noreferrer">Conway</a> where I helped develop data analyst agents for the financial industry. Previously, I worked at Infosys' living labs in Bangalore. There, I helped develop a multi-modal SLM chatbot deployed on edge compute for F500 clients.</p>
 
-            <p>I had the pleasure of studying CS & Applied Math at Yale University. I rather enjoyed my <a href="https://open.spotify.com/track/1K7iAISbvJ3CbIF90KLyfU?si=7709c45cbb35446f" target="_blank" rel="noopener noreferrer">Bright College Years</a>. I encourage any Yalies who are in tech (or want to be) to reach out.</p>
+            <p>I had the pleasure of studying CS & Applied Math at Yale University. I rather enjoyed <a href="https://open.spotify.com/track/1K7iAISbvJ3CbIF90KLyfU?si=7709c45cbb35446f" target="_blank" rel="noopener noreferrer">my shortest, gladdest years of life</a>. I encourage any Yalies who are in tech (or want to be) to reach out.</p>
 
             <hr class="rule">
 
@@ -248,8 +252,9 @@
         </div>
     </div>
 
-    <div class="footer anim">
-        I absolutely love to hear from people. <a id="email-link" href="#">Email me!</a>
+    <div class="corner-tr anim">
+        <a href="https://github.com/angeloviciy" target="_blank" rel="noopener noreferrer">github</a>
+        <a id="email-link" href="#">email</a>
     </div>
 
     <script>
@@ -275,6 +280,7 @@
             const d = ['gmail', 'com'].join('.');
             const el = document.getElementById('email-link');
             el.href = 'mai' + 'lto:' + u + '@' + d;
+            el.title = u + '@' + d;
         })();
     </script>
 </body>
