@@ -22,25 +22,25 @@
   const UNREACHABLE = 255;
   const RING_MINUTES = [15, 30, 45, 60];
   const OUTER_RINGS = [90, 120]; // the night zone
-  const T_CUT = 148; // minutes beyond which streets are not drawn
-  const DAY_SECONDS = 10; // one 24h loop = one heartbeat
+  const DAY_SECONDS = 14.5; // one full beat
   const KX = Math.cos((37.77 * Math.PI) / 180); // lon -> meters correction
 
-  // Temporal low-pass over the day: each slice becomes a [1,2,1]/4 blend
-  // with its neighbors. Slice-to-slice sampling jitter (±1-2 min) vanishes;
-  // the day/night wave, which spans many slices, is untouched.
+  // Temporal low-pass over the day: each slice becomes a [1,2,4,2,1]/10
+  // blend with its neighbors (±1 h). Sampling jitter vanishes and the
+  // stepped service drops of the night wind-down round off into a smooth
+  // wave; the day/night cycle itself spans many slices and is untouched.
+  const KERNEL = [1, 2, 4, 2, 1];
   const raw = new Uint8Array(timesBuf);
   const cells = nx * ny;
   const times = new Float32Array(raw.length);
   for (let c = 0; c < cells; c++) {
     for (let s = 0; s < slices; s++) {
-      const v = raw[s * cells + c];
-      if (v === 255) { times[s * cells + c] = 255; continue; }
-      let sum = v * 2, w = 2;
-      const prev = raw[((s + slices - 1) % slices) * cells + c];
-      const next = raw[((s + 1) % slices) * cells + c];
-      if (prev !== 255) { sum += prev; w += 1; }
-      if (next !== 255) { sum += next; w += 1; }
+      if (raw[s * cells + c] === 255) { times[s * cells + c] = 255; continue; }
+      let sum = 0, w = 0;
+      for (let k = -2; k <= 2; k++) {
+        const v = raw[((s + k + slices) % slices) * cells + c];
+        if (v !== 255) { sum += v * KERNEL[k + 2]; w += KERNEL[k + 2]; }
+      }
       times[s * cells + c] = sum / w;
     }
   }
@@ -89,17 +89,20 @@
   }
 
   // Travel time at a continuous day position (in slices), per vertex.
+  // Unreachable samples become a phantom time whose radius lies beyond
+  // the screen diagonal (set in resize), so streets never vanish in
+  // place: they fly off the screen and glide back in.
+  let phantomT = 999;
   function timeAt(s0, s1, frac, gx, gy) {
-    const a = sample(s0, gx, gy);
-    const b = sample(s1, gx, gy);
-    if (a === UNREACHABLE && b === UNREACHABLE) return UNREACHABLE;
-    if (a === UNREACHABLE) return b;
-    if (b === UNREACHABLE) return a;
+    let a = sample(s0, gx, gy);
+    let b = sample(s1, gx, gy);
+    if (a === UNREACHABLE) a = phantomT;
+    if (b === UNREACHABLE) b = phantomT;
     return a + (b - a) * frac;
   }
 
   // --- Layout ---
-  let W, H, cx, cy, rScale;
+  let W, H, cx, cy, rScale, segBreakSq;
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
@@ -115,6 +118,14 @@
     // easiest) sits compactly inside the small 60-min ring; the 120-min
     // ring touches the screen edge, so the night stretch runs off-screen.
     rScale = (0.48 * Math.min(W, H)) / 120;
+    // Unreachable vertices park just beyond the screen diagonal, so the
+    // exit is always completed out of view, on any aspect ratio.
+    phantomT = Math.hypot(W, H) / 2 / rScale + 15;
+    // A single street segment stretched longer than this is a line
+    // straddling the reachability frontier — break it rather than draw
+    // a radial streak across the screen.
+    const segBreak = 0.2 * Math.min(W, H);
+    segBreakSq = segBreak * segBreak;
   }
   resize();
   window.addEventListener("resize", resize);
@@ -126,15 +137,18 @@
     for (const v of lines) {
       const n = v.length / 4;
       let pen = false;
+      let px = 0, py = 0;
       for (let i = 0; i < n; i++) {
         const t = timeAt(s0, s1, frac, v[4 * i + 2], v[4 * i + 3]);
-        if (t === UNREACHABLE || t > T_CUT) { pen = false; continue; }
         const r = t * rScale;
         const x = cx + v[4 * i] * r;
         const y = cy - v[4 * i + 1] * r;
-        if (pen) ctx.lineTo(x, y);
+        const dx = x - px, dy = y - py;
+        if (pen && dx * dx + dy * dy < segBreakSq) ctx.lineTo(x, y);
         else ctx.moveTo(x, y);
         pen = true;
+        px = x;
+        py = y;
       }
     }
     ctx.stroke();
@@ -169,37 +183,56 @@
     ctx.fill();
   }
 
-  // Non-uniform playback shaped into a regular heartbeat. The visual
-  // change all lives in the night hours, so the flat daytime is crossed
-  // quickly and the stretch out / pull in get equal, unhurried halves.
-  // Anchors map animation phase -> hour of day (monotonic; 30 = 06:00).
-  const ANCHORS = [
-    [0.00, 6],    // rest: the compact 06:00 city
-    [0.20, 21],   // fast-forward through the (visually flat) day
-    [0.55, 27],   // diastole: stretch out to 03:00
-    [0.62, 27.5], // hold at full stretch
-    [1.00, 30],   // systole: pull back in to 06:00
+  // Playback shaped into a heartbeat from the night's two real arcs: the
+  // evening wind-down (21:00 -> 03:00) plays as the expansion, and the
+  // actual dawn wake-up (03:00 -> 06:00) plays as the contraction — so the
+  // return is not a mirrored replay but the city's own morning, with its
+  // late drift and sudden rush home as service resumes. The flat daytime
+  // is never played (the rest frame at 21:00 and the end frame at 06:00
+  // look identical), so no midday tremor exists. Brief rests, equal-speed
+  // motions. Segments: [pStart, pEnd, hourStart, hourEnd] (24+h = next day).
+  const SEGMENTS = [
+    [0.00, 0.04, 21, 21],  // rest, fully in (still frame)
+    [0.04, 0.50, 21, 27],  // diastole: stretch out through the real evening
+    [0.50, 0.54, 27, 27],  // hold, fully out
+    [0.54, 1.00, 27, 30],  // systole: contract through the real dawn
   ];
+  // Smootherstep: zero velocity AND zero acceleration at both ends, so
+  // each motion swells from stillness and settles back without any jerk.
+  function ease(u) {
+    return u * u * u * (u * (u * 6 - 15) + 10);
+  }
   function hourAt(p) {
-    for (let i = 1; i < ANCHORS.length; i++) {
-      const [p0, h0] = ANCHORS[i - 1];
-      const [p1, h1] = ANCHORS[i];
-      if (p <= p1) return h0 + ((p - p0) / (p1 - p0)) * (h1 - h0);
+    for (const [p0, p1, h0, h1] of SEGMENTS) {
+      if (p <= p1) return h0 + (h1 - h0) * ease((p - p0) / (p1 - p0));
     }
-    return ANCHORS[ANCHORS.length - 1][1];
+    return 21;
   }
 
   const t0 = performance.now();
+  const REST_END = SEGMENTS[0][1];
+  const SLICE_06 = 12, SLICE_21 = 42; // 06:00 and 21:00, the two "in" poles
   function frame(now) {
     const p = ((now - t0) / 1000 / DAY_SECONDS) % 1;
-    const dayFrac = (hourAt(p) % 24) / 24;
-    const sPos = (dayFrac * slices) % slices;
-    const s0 = Math.floor(sPos);
-    const s1 = (s0 + 1) % slices;
-    const frac = sPos - s0;
+    let s0, s1, frac;
+    if (p < REST_END) {
+      // Rest phase doubles as the seam: a direct crossfade from the dawn
+      // arrival state (06:00) to the evening departure state (21:00).
+      // The two are nearly identical, so this reads as stillness — but it
+      // removes the once-per-beat snap the hard loop restart used to have.
+      s0 = SLICE_06;
+      s1 = SLICE_21;
+      frac = ease(p / REST_END);
+    } else {
+      const dayFrac = (hourAt(p) % 24) / 24;
+      const sPos = (dayFrac * slices) % slices;
+      s0 = Math.floor(sPos);
+      s1 = (s0 + 1) % slices;
+      frac = sPos - s0;
+    }
 
     // Pulse peaks at full stretch (middle of the hold phase).
-    const pulse = Math.pow(0.5 + 0.5 * Math.cos((p - 0.585) * 2 * Math.PI), 3);
+    const pulse = Math.pow(0.5 + 0.5 * Math.cos((p - 0.52) * 2 * Math.PI), 3);
 
     ctx.clearRect(0, 0, W, H);
     drawRings(pulse);
