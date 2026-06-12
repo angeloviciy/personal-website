@@ -189,7 +189,7 @@
         <div class="name"><a href="/">Yogev Angelovici</a></div>
         <nav class="nav">
             <a href="#about" data-page="about">About</a>
-            <a href="#media" data-page="media">Media</a>
+            <a href="#readings" data-page="readings">Readings</a>
             <a href="#writings" data-page="writings">Writings</a>
         </nav>
     </div>
@@ -213,7 +213,7 @@
             </p>
         </div>
 
-        <div id="media" class="panel list anim">
+        <div id="readings" class="panel list anim">
             <a class="list-item" href="https://tachilab.org/en/about/telexistence.html" target="_blank" rel="noopener noreferrer">
                 Telexistence
                 <div class="item-sub">Susumu Tachi</div>
@@ -244,10 +244,6 @@
                 Leadership
                 <div class="item-sub">General Matthew Ridgway</div>
             </a>
-            <a class="list-item" href="https://www.crunchyroll.com/series/G4PH0WZDD/sonny-boy" target="_blank" rel="noopener noreferrer">
-                Sonny Boy
-                <div class="item-sub">Studio Madhouse</div>
-            </a>
         </div>
 
         <div id="writings" class="panel list anim">
@@ -277,7 +273,7 @@
 
         function fromHash() {
             const hash = location.hash.slice(1);
-            showPage(['about', 'media', 'writings'].includes(hash) ? hash : 'about');
+            showPage(['about', 'readings', 'writings'].includes(hash) ? hash : 'about');
         }
 
         window.addEventListener('hashchange', fromHash);
