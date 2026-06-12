@@ -102,7 +102,7 @@
   }
 
   // --- Layout ---
-  let W, H, cx, cy, rScale, segBreakSq;
+  let W, H, cx, cy, rScale;
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
@@ -121,11 +121,6 @@
     // Unreachable vertices park just beyond the screen diagonal, so the
     // exit is always completed out of view, on any aspect ratio.
     phantomT = Math.hypot(W, H) / 2 / rScale + 15;
-    // A single street segment stretched longer than this is a line
-    // straddling the reachability frontier — break it rather than draw
-    // a radial streak across the screen.
-    const segBreak = 0.2 * Math.min(W, H);
-    segBreakSq = segBreak * segBreak;
   }
   resize();
   window.addEventListener("resize", resize);
@@ -136,19 +131,13 @@
     ctx.beginPath();
     for (const v of lines) {
       const n = v.length / 4;
-      let pen = false;
-      let px = 0, py = 0;
       for (let i = 0; i < n; i++) {
         const t = timeAt(s0, s1, frac, v[4 * i + 2], v[4 * i + 3]);
         const r = t * rScale;
         const x = cx + v[4 * i] * r;
         const y = cy - v[4 * i + 1] * r;
-        const dx = x - px, dy = y - py;
-        if (pen && dx * dx + dy * dy < segBreakSq) ctx.lineTo(x, y);
+        if (i) ctx.lineTo(x, y);
         else ctx.moveTo(x, y);
-        pen = true;
-        px = x;
-        py = y;
       }
     }
     ctx.stroke();
