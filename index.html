@@ -79,24 +79,31 @@
             text-align: right;
         }
 
-        .map-label {
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-            font-size: 11px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--fg-2);
+        .corner-tr a {
+            display: block;
+            font-size: 13px;
+            line-height: 1.9;
+            color: var(--fg-3);
+            text-decoration: none;
+            transition: color 0.2s;
         }
 
-        .corner-bl {
+        .corner-tr a:hover {
+            color: var(--fg);
+        }
+
+        .corner-br {
             bottom: 1.5rem;
-            left: 1.75rem;
-            max-width: 320px;
+            right: 1.75rem;
+            max-width: 380px;
+            text-align: right;
         }
 
         .caption {
             font-size: 12px;
             line-height: 1.6;
             color: var(--fg-2);
+            text-wrap: balance;
         }
 
         .caption .sub {
@@ -114,7 +121,7 @@
         }
 
         @media (max-width: 640px) {
-            .corner-bl {
+            .corner-br {
                 max-width: 230px;
             }
         }
@@ -145,19 +152,29 @@
     </div>
 
     <div class="overlay corner-tr anim">
-        <div class="map-label">one day in SF</div>
+        <a href="https://github.com/angeloviciy" target="_blank" rel="noopener noreferrer">github</a>
+        <a id="email-link" href="#">email</a>
     </div>
 
-    <div class="overlay corner-bl anim d2">
+    <div class="overlay corner-br anim d2">
         <div class="caption">
-            San Francisco, drawn in time. Every street sits at its travel
-            time from my front door — on foot or by transit, whichever is
-            faster. The rings are minutes, not miles.
-            <span class="sub">The grid breathes as the timetable wakes and
-            sleeps. <a href="pages.html#writings">Why this map</a></span>
+            An isochronic map of SF over the course of a day. Time is defined
+            by the faster of public transit or simply walking.
+            <span class="sub" style="display: block;"><a href="writings/collapsing-the-isochrone.html">Why this map</a></span>
         </div>
     </div>
 
     <script src="assets/map.js"></script>
+    <script>
+        // Assemble the address at runtime so it never appears in the
+        // page source for harvesters to scrape.
+        (function () {
+            const u = ['angel', 'oviciy'].join('');
+            const d = ['gmail', 'com'].join('.');
+            const el = document.getElementById('email-link');
+            el.href = 'mai' + 'lto:' + u + '@' + d;
+            el.title = u + '@' + d;
+        })();
+    </script>
 </body>
 </html>

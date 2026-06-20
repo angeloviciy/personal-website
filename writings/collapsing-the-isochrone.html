@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Collapsing the Isochrone &mdash; Yogev Angelovici</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --fg: #111111;
+            --fg-2: #555555;
+            --fg-3: #999999;
+            --bg: #fffefd;
+        }
+
+        body {
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .corner-tl {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.75rem;
+            z-index: 1;
+        }
+
+        .name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .name a {
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav a {
+            font-size: 13px;
+            color: var(--fg-3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: var(--fg);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .sub {
+            font-size: 13px;
+            color: var(--fg-3);
+            margin-bottom: 1.75rem;
+        }
+
+        .soon-tag {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgb(178, 34, 34);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anim {
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="corner-tl anim">
+        <div class="name"><a href="../">Yogev Angelovici</a></div>
+        <nav class="nav">
+            <a href="../pages.html#about">About</a>
+            <a href="../pages.html#readings">Readings</a>
+            <a href="../pages.html#writings" class="active">Writings</a>
+        </nav>
+    </div>
+
+    <main class="hero anim">
+        <h1>Collapsing the Isochrone</h1>
+        <div class="sub">Speed and San Francisco</div>
+        <div class="soon-tag">Coming soon</div>
+    </main>
+</body>
+</html>
