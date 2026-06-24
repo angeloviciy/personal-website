@@ -16,6 +16,8 @@
             --fg-2: #555555;
             --fg-3: #999999;
             --bg: #fffefd;
+            --gutter: 230px;
+            --measure: 540px;
         }
 
         body {
@@ -62,9 +64,15 @@
         }
 
         .essay {
-            max-width: 560px;
+            max-width: calc(var(--measure) + var(--gutter) + 3rem);
             margin: 0 auto;
             padding: 9rem 1.5rem 8rem;
+        }
+
+        /* Left-aligned reading column with a right gutter for marginalia. */
+        .essay > * {
+            margin-right: var(--gutter);
+            max-width: var(--measure);
         }
 
         h1 {
@@ -77,13 +85,18 @@
             margin-bottom: 1.25rem;
         }
 
-        .essay ul,
         .essay ol {
-            margin: 0 0 1.25rem 1.25rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            padding-left: 2.5rem;
         }
 
         .essay li {
             margin-bottom: 0.5rem;
+        }
+
+        .essay strong {
+            font-weight: 600;
         }
 
         figure {
@@ -102,6 +115,205 @@
             margin-top: 0.5rem;
         }
 
+        /* In-text reference marker */
+        sup.fn-ref {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--fg-3);
+            line-height: 0;
+            padding: 0 0.12em;
+            white-space: nowrap;
+        }
+
+        /* Right-margin notes */
+        .mn {
+            float: right;
+            clear: right;
+            width: calc(var(--gutter) - 40px);
+            margin-right: calc(-1 * var(--gutter));
+            margin-top: 0.15rem;
+            margin-bottom: 0.7rem;
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--fg-3);
+            text-align: left;
+        }
+
+        .mn-row {
+            display: block;
+        }
+
+        .mn-row + .mn-row {
+            margin-top: 0.35rem;
+        }
+
+        .mn-num {
+            font-weight: 600;
+            margin-right: 0.35em;
+            color: var(--fg-3);
+        }
+
+        .mn a {
+            color: var(--fg-3);
+            text-decoration: none;
+            border-bottom: 1px solid #e2e0de;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .mn a:hover {
+            color: var(--fg);
+            border-color: var(--fg-3);
+        }
+
+        /* Collapsible source box, parked in the right margin */
+        .mn-src {
+            float: right;
+            clear: right;
+            width: calc(var(--gutter) - 40px);
+            margin-right: 0;
+            margin-top: 0.15rem;
+            margin-bottom: 0.7rem;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .mn-src summary {
+            cursor: pointer;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--fg-3);
+            letter-spacing: 0.03em;
+            text-transform: lowercase;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .mn-src summary:hover {
+            color: var(--fg);
+        }
+
+        .mn-src summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .mn-src summary::before {
+            content: "\25B8";
+            font-size: 9px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .mn-src[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .src-body {
+            margin-top: 0.5rem;
+            padding: 0.7rem 0.85rem;
+            background: #f7f5f2;
+            border-radius: 6px;
+            color: var(--fg-2);
+        }
+
+        .mn-src[open] .src-body {
+            animation: ucOpen 0.28s ease forwards;
+            transform-origin: top center;
+        }
+
+        .src-row {
+            display: block;
+        }
+
+        .src-row + .src-row {
+            margin-top: 0.4rem;
+        }
+
+        .src-num {
+            font-weight: 600;
+            margin-right: 0.35em;
+            color: var(--fg-3);
+        }
+
+        .src-body a {
+            color: var(--fg-2);
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            transition: color 0.2s;
+        }
+
+        .src-body a:hover {
+            color: var(--fg);
+        }
+
+        /* Expanding "use cases" disclosure */
+        .usecases {
+            margin-top: -0.4rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .usecases summary {
+            cursor: pointer;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 12px;
+            letter-spacing: 0.03em;
+            text-transform: lowercase;
+            color: var(--fg-3);
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .usecases summary:hover {
+            color: var(--fg);
+        }
+
+        .usecases summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .usecases summary::before {
+            content: "\25B8";
+            display: inline-block;
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .usecases[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .uc-body {
+            margin-top: 0.75rem;
+            margin-left: 1.25rem;
+            padding: 1rem 1.25rem 0.1rem;
+            background: #f7f5f2;
+            border-radius: 7px;
+        }
+
+        .usecases[open] .uc-body {
+            animation: ucOpen 0.28s ease forwards;
+            transform-origin: top center;
+        }
+
+        .uc-body p {
+            margin-bottom: 1rem;
+        }
+
+        /* Notes inside the use-case box reach the same gutter line as the rest
+           by compensating for the box's right padding. */
+        .uc-body .mn {
+            margin-right: calc(-1 * var(--gutter) - 1.25rem);
+        }
+
+        @keyframes ucOpen {
+            from { opacity: 0; transform: scaleY(0.96) translateY(-4px); }
+            to { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
@@ -110,6 +322,37 @@
         .anim {
             opacity: 0;
             animation: fadeIn 0.6s ease forwards;
+        }
+
+        /* Narrow screens: notes fall back to inline asides */
+        @media (max-width: 920px) {
+            .essay {
+                max-width: 640px;
+            }
+
+            .essay > * {
+                margin-right: 0;
+                max-width: 100%;
+            }
+
+            .mn {
+                float: none;
+                clear: none;
+                display: block;
+                width: auto;
+                margin: 0.5rem 0;
+                margin-right: 0;
+                padding-left: 0.9rem;
+                border-left: 2px solid #eceae8;
+                color: var(--fg-2);
+            }
+
+            .mn-src {
+                float: none;
+                clear: none;
+                width: auto;
+                margin: 0.75rem 0 1.25rem;
+            }
         }
     </style>
 </head>
@@ -126,13 +369,36 @@
     <article class="essay anim">
         <h1>Dromos</h1>
 
-        <p>Today, the robotics industry has a data problem. The robotics foundation model labs have approximately five orders of magnitude less data to train on than the language model labs.</p>
+        <p>Today, the robotics industry has a data problem. The robotics foundation model labs have approximately five orders of magnitude less data to train on than the language model labs.<sup class="fn-ref">1</sup><span class="mn"><span class="mn-row"><span class="mn-num">1</span>Zhong et al., <a href="https://arxiv.org/abs/2507.01925">&ldquo;A Survey on Vision-Language-Action Models,&rdquo;</a> arXiv:2507.01925 (2025).</span></span> Even more worryingly, no viable data collection solution has yet been implemented as an economy of scale. The gold standard of data is synchronized observation&ndash;action pairs on the target embodiment.<sup class="fn-ref">2</sup><span class="mn"><span class="mn-row"><span class="mn-num">2</span>This is the standard view for policies trained via imitation learning.</span></span> Current scalable methods are cheap but don&rsquo;t have all of these properties.<sup class="fn-ref">3</sup><span class="mn"><span class="mn-row"><span class="mn-num">3</span>Simulation suffers from an acute sim-to-real gap when compared to deployment environments and embodiments. Video has no action labels and often contains the wrong embodiment.</span></span> Teleoperation data does have all desired properties, but carries flat marginal cost per operator-hour.<sup class="fn-ref">4</sup><span class="mn"><span class="mn-row"><span class="mn-num">4</span>This is understating the case. Current teleoperation data collection methods might actually have a diseconomy of scale due to the need to constantly innovate diverse tasks and environments. Producing large quantities of valuable data, each unit of which has to contribute some diversity compared to all other collected units of data, arguably has increasing marginal cost.</span></span></p>
 
-        <p>Today, humans have an embodiment problem. Every person gets one body in one location. It is hard to transport this body and even harder to change its shape. In 2025, we collectively spent eight trillion dollars on both of these things.</p>
+        <p>Today, humans have an embodiment problem. Every person only gets one body in one location. Firstly, this creates the problem of having to transport it everywhere. In 2025, humanity spent 15 trillion dollars on personal transportation and associated infrastructure.<sup class="fn-ref">5&ndash;8</sup></p>
+
+        <details class="mn-src">
+            <summary>sources</summary>
+            <div class="src-body">
+                <span class="src-row"><span class="src-num">5</span>PwC &amp; Global Infrastructure Hub, Global Infrastructure Outlook (2026 ed.; original GI Hub/Oxford Economics data at outlook.gihub.org).</span>
+                <span class="src-row"><span class="src-num">6</span>OECD / International Transport Forum, Transport Infrastructure Investment and Maintenance database and annual Statistics Brief (itf-oecd.org).</span>
+                <span class="src-row"><span class="src-num">7</span>World Travel &amp; Tourism Council, Travel &amp; Tourism Economic Impact Research (wttc.org); and separately UN Tourism (UNWTO) World Tourism Barometer.</span>
+                <span class="src-row"><span class="src-num">8</span>World Bank, Final consumption expenditure / Households final consumption indicators (data.worldbank.org), supplemented by US BLS/BEA and Eurostat.</span>
+            </div>
+        </details>
+
+        <p>Secondly, this creates a problem when we want to change this body&rsquo;s shape and abilities. In 2025, humanity spent 300 billion dollars on fitness, cosmetics, prosthetics, and other associated industries.<sup class="fn-ref">9&ndash;13</sup></p>
+
+        <details class="mn-src">
+            <summary>sources</summary>
+            <div class="src-body">
+                <span class="src-row"><span class="src-num">9</span>Fitness: Health &amp; Fitness Association, 2025 Global Fitness Industry Report; Future Market Insights, Health and Fitness Club Market ($119.8B, 2025).</span>
+                <span class="src-row"><span class="src-num">10</span>GLP-1 (weight-loss segment): Grand View Research, GLP-1 Agonists Weight Loss Drugs Market ($20.86B, 2025); Morgan Stanley Research, GLP-1 outlook.</span>
+                <span class="src-row"><span class="src-num">11</span>Prosthetics &amp; orthotics: Grand View Research ($6.8B, 2025); Future Market Insights ($7.64B, 2025).</span>
+                <span class="src-row"><span class="src-num">12</span>Cosmetic procedures: ISAPS Global Survey (procedure volumes); Fortune Business Insights, Cosmetic Surgery Market ($59.1B, 2025).</span>
+                <span class="src-row"><span class="src-num">13</span>Hearing aids: EHIMA unit-sales data (22.69M units, 2024); Grand View Research, Hearing Aids Market ($9.08B, 2025).</span>
+            </div>
+        </details>
 
         <p>The solution to both of these problems is a worldwide telexistence network.</p>
 
-        <p>Imagine a human being on one end equipped with audiovisual and haptic feedback equipment (a VR headset and gloves, for example). They are connected over the global network to a humanoid robot at a remote location. With low latency and extensive sensory feedback, they will gain a feeling of presence at the remote location almost indistinguishable from truly being there.</p>
+        <p>Imagine a human being on one end equipped with audiovisual and haptic feedback equipment (a VR headset and gloves, for example). They are connected over the global network to a humanoid robot at a remote location. If the person is shown the first person point of view of the robot and it copies their movements, their brain soon comes to accept the robot body as their own. This is a phenomenon called the &ldquo;full body ownership illusion&rdquo;. It&rsquo;s so strong, in fact, that they can pilot the robot over to their real body, shake their real hand with their robot hand, <strong><em>and still feel like the robot body is the real one.</em></strong><sup class="fn-ref">14</sup><span class="mn"><span class="mn-row"><span class="mn-num">14</span>Petkova &amp; Ehrsson, <a href="https://doi.org/10.1371/journal.pone.0003832">&ldquo;If I Were You: Perceptual Illusion of Body Swapping,&rdquo;</a> PLoS ONE (2008).</span></span> While this illusion is maintained, they experience the feeling of having switched bodies.</p>
 
         <figure>
             <img src="../assets/telesar-vi.png" alt="A humanoid robot beside a seated operator wearing a VR headset and haptic gloves">
@@ -141,22 +407,38 @@
 
         <p>This gives human beings a solution to their embodiment problem:</p>
 
-        <ul>
-            <li>They can be anywhere, instantaneously. Any location where a robot is connected to the network is available for them to &lsquo;transport&rsquo; to. The end user no longer has to face the limits of geography.</li>
-            <li>They can take on any embodiment. Speed, strength, and other desirable physical traits can be engineered into the robotic avatars depending on user preference. The end user no longer has to be beholden to the limits of their body.</li>
-        </ul>
+        <p>They can be anywhere, instantaneously. Since the user can effectively &lsquo;switch bodies&rsquo;, the user can just transfer themselves to a robotic body located anywhere in the world. From the user&rsquo;s perspective, they&rsquo;ve instantly arrived at the robot&rsquo;s location.</p>
 
-        <p>This gives the robotics community a solution to their data problem. Rich sensorimotor and proprioceptive data can be collected from this network and used for training robotics foundation models. This would be the internet scale corpus for robotics.</p>
+        <details class="usecases">
+            <summary>use cases</summary>
+            <div class="uc-body">
+                <p>This can be used to create a global transportation network. With even a small fraction of the billion humanoids we expect to produce in the next twenty years,<sup class="fn-ref">15</sup><span class="mn"><span class="mn-row"><span class="mn-num">15</span>Morgan Stanley Research, <a href="https://www.morganstanley.com/insights/articles/humanoid-robot-market-5-trillion-by-2050">&ldquo;Humanoids: A $5 Trillion Market&rdquo;</a>, ~1B units by 2050.</span></span> one could place bodies in all inhabited cities on earth. Anyone who has business in that city, whether for work, for tourism, or to visit friends and family could get there instantly via renting these bodies out. <strong>You can sell teleportation as a product.</strong></p>
+            </div>
+        </details>
+
+        <p>They can take on any embodiment. Desirable physical traits can be engineered into the robotic avatars depending on user preference. The end user no longer has to be beholden to the limits of their body, only the limits of our engineering capabilities.</p>
+
+        <details class="usecases">
+            <summary>use cases</summary>
+            <div class="uc-body">
+                <p>This can be used as a way for users to visit dangerous or impossible to access locations. A robot can be engineered to withstand extreme conditions. It&rsquo;s also more disposable than a human life. One can imagine using these robots to spacewalk, explore life-threatening environments, or rush into burning buildings without a second thought. With this technology, humans could do all these things with zero risk. <strong>You could sell safe access to dangerous environments as a product.</strong></p>
+                <p>This can be a way for the disabled, elderly, or infirm to regain ability via partial robot autonomy. A paraplegic, for example, could use the robot but have the lower half controlled by a locomotion policy<sup class="fn-ref">16</sup><span class="mn"><span class="mn-row"><span class="mn-num">16</span>A type of AI model that controls leg movement.</span></span> they can direct via joystick. The robot body would be able to walk like a fully able person while the user naturally controls the upper body. In effect, this lets the user experience the world as a fully able person. For an even more extreme example, a quadriplegic could have the entire body run autonomously and instruct it only via natural language. In this way, they could regain full body agency with only their voice or a keyboard. <strong>You could sell restoring human ability as a product.</strong></p>
+            </div>
+        </details>
+
+        <p>This network also gives the robotics community a solution to their data problem. Whenever the user pilots a robotic body, they passively produce teleoperation data. Since the user is paying for the experience, the marginal cost per operator-hour is negative. This &lsquo;data-exhaust&rsquo; approach to data collection inverts the cost structure that currently bottlenecks robotics foundation models.</p>
+
+        <p>Secondly, unlike teleoperation data that comes from controlled lab settings, the resulting data corpus would gain diversity for free. Humans will use these robots to navigate and interact in homes, streets, shops, and other complex environments. It would also be a good source for social interaction data, as humans communicate with each other while piloting these robots. Taken together, these two factors make the resulting data potentially more valuable than what even current teleoperation collection facilities can provide.</p>
 
         <p>Our goal at Dromos is to create the telexistence network. This has three components:</p>
 
         <ol>
-            <li>Making sensory feedback equipment available to end users.</li>
-            <li>Creating a networking solution for worldwide low-latency teleoperation.</li>
-            <li>Placing desirable robotic bodies at locations of interest.</li>
+            <li>Making sensory feedback equipment available to end users. On a technical level, this includes VR headsets, haptic feedback gloves, and omnidirectional treadmills. All three of these technologies have significant room to mature. However, current off-the-shelf hardware is sufficiently advanced to reliably induce within the user the full-body ownership illusion.<sup class="fn-ref">17</sup><span class="mn"><span class="mn-row"><span class="mn-num">17</span>Again, based on the experiments conducted in Petkova and Ehrsson (see note 14).</span></span></li>
+            <li>Creating a networking solution for worldwide low-latency teleoperation. Latency is introduced both via the time it takes to send data over the global network as well as the latency between image capture, encoding, and decoding from glass-to-glass.<sup class="fn-ref">18</sup><span class="mn"><span class="mn-row"><span class="mn-num">18</span>For the unfamiliar, <a href="https://samconsidine.com/posts/h264-encoding/">samconsidine.com/posts/h264-encoding</a> and <a href="https://transitiverobotics.com/blog/webrtc-latency-breakdown/#interpretation">transitiverobotics.com/blog/webrtc-latency-breakdown</a> are great introductions.</span></span> The goal is to get to under 100ms latency for closed-loop control of the robot.</li>
+            <li>Placing desirable robotic bodies at locations of interest. This includes direct acquisition of humanoid robots and the development of deployment infrastructure. It also includes pursuing the rights, hopefully exclusive, to their deployment at important locations.<sup class="fn-ref">19</sup><span class="mn"><span class="mn-row"><span class="mn-num">19</span>At the moment there are no major legal hurdles to the deployment of robotic bodies in public areas. However, we strongly believe that securing the rights to deploy this network in privately-held areas such as amusement parks, religious sites, and other high-traffic tourist locations will serve as a future moat.</span></span></li>
         </ol>
 
-        <p>We believe a body should be something you choose, and the world should be one place. Dromos exists to make that true.</p>
+        <p>We believe a body should be something you choose and the world should be instantly accessible. Dromos exists to make that true.</p>
     </article>
 </body>
 </html>
