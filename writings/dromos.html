@@ -123,6 +123,13 @@
             line-height: 0;
             padding: 0 0.12em;
             white-space: nowrap;
+            scroll-margin-top: 5rem;
+        }
+
+        sup.fn-ref a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: none;
         }
 
         /* Right-margin notes */
@@ -309,6 +316,48 @@
             margin-right: calc(-1 * var(--gutter) - 1.25rem);
         }
 
+        /* End-of-essay bibliography (shown only when the margin collapses) */
+        .bibliography {
+            display: none;
+            margin-top: 3.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ececec;
+        }
+
+        .bibliography h2 {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--fg-2);
+            margin-bottom: 1.1rem;
+        }
+
+        .bib-entry {
+            font-size: 12px;
+            line-height: 1.55;
+            color: var(--fg-2);
+            margin-bottom: 0.7rem;
+            padding-left: 1.9rem;
+            text-indent: -1.9rem;
+            scroll-margin-top: 4rem;
+        }
+
+        .bib-entry a {
+            color: var(--fg-2);
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .bib-entry a:hover {
+            color: var(--fg);
+        }
+
+        .bib-back {
+            border-bottom: none !important;
+            color: var(--fg-3) !important;
+            white-space: nowrap;
+        }
+
         @keyframes ucOpen {
             from { opacity: 0; transform: scaleY(0.96) translateY(-4px); }
             to { opacity: 1; transform: scaleY(1) translateY(0); }
@@ -324,7 +373,8 @@
             animation: fadeIn 0.6s ease forwards;
         }
 
-        /* Narrow screens: notes fall back to inline asides */
+        /* Narrow screens: the right margin is gone, so the notes collapse
+           into a single bibliography at the end of the essay. */
         @media (max-width: 920px) {
             .essay {
                 max-width: 640px;
@@ -335,23 +385,13 @@
                 max-width: 100%;
             }
 
-            .mn {
-                float: none;
-                clear: none;
-                display: block;
-                width: auto;
-                margin: 0.5rem 0;
-                margin-right: 0;
-                padding-left: 0.9rem;
-                border-left: 2px solid #eceae8;
-                color: var(--fg-2);
+            .mn,
+            .mn-src {
+                display: none;
             }
 
-            .mn-src {
-                float: none;
-                clear: none;
-                width: auto;
-                margin: 0.75rem 0 1.25rem;
+            .bibliography {
+                display: block;
             }
         }
     </style>
@@ -440,5 +480,52 @@
 
         <p>We believe a body should be something you choose and the world should be instantly accessible. Dromos exists to make that true.</p>
     </article>
+
+    <script>
+        // The footnotes live in the right margin on wide screens. When that
+        // margin collapses (see the @media rule), CSS hides them and reveals
+        // this generated bibliography instead. Built from the same note
+        // markup so the two never drift apart.
+        (function () {
+            const essay = document.querySelector(".essay");
+            const rows = essay.querySelectorAll(".mn-row, .src-row");
+            if (!rows.length) return;
+            const firstNum = (el) => (el.textContent.match(/\d+/) || [])[0];
+
+            // Make each in-text marker a link to its note, and an anchor the
+            // note can point back to.
+            essay.querySelectorAll("sup.fn-ref").forEach((sup) => {
+                const n = firstNum(sup);
+                if (!n) return;
+                sup.id = "ref-" + n;
+                const a = document.createElement("a");
+                a.href = "#note-" + n;
+                while (sup.firstChild) a.appendChild(sup.firstChild);
+                sup.appendChild(a);
+            });
+
+            const sec = document.createElement("section");
+            sec.className = "bibliography";
+            sec.innerHTML = "<h2>Notes</h2>";
+            rows.forEach((row) => {
+                const numEl = row.querySelector(".mn-num, .src-num");
+                const n = numEl && firstNum(numEl);
+                const entry = document.createElement("div");
+                entry.className = "bib-entry";
+                if (n) entry.id = "note-" + n;
+                entry.innerHTML = row.innerHTML;
+                if (n && document.getElementById("ref-" + n)) {
+                    const back = document.createElement("a");
+                    back.className = "bib-back";
+                    back.href = "#ref-" + n;
+                    back.setAttribute("aria-label", "Back to text");
+                    back.innerHTML = " ↩";
+                    entry.appendChild(back);
+                }
+                sec.appendChild(entry);
+            });
+            essay.appendChild(sec);
+        })();
+    </script>
 </body>
 </html>
