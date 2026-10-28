@@ -30,7 +30,7 @@
             font-size: 14px;
         }
 
-        #map {
+        #scene {
             position: fixed;
             inset: 0;
             display: block;
@@ -92,40 +92,6 @@
             color: var(--fg);
         }
 
-        .corner-br {
-            bottom: 1.5rem;
-            right: 1.75rem;
-            max-width: 380px;
-            text-align: right;
-        }
-
-        .caption {
-            font-size: 12px;
-            line-height: 1.6;
-            color: var(--fg-2);
-            text-wrap: balance;
-        }
-
-        .caption .sub {
-            color: var(--fg-3);
-        }
-
-        .caption a {
-            color: var(--fg-2);
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-
-        .caption a:hover {
-            color: var(--fg);
-        }
-
-        @media (max-width: 640px) {
-            .corner-br {
-                max-width: 230px;
-            }
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -140,7 +106,7 @@
     </style>
 </head>
 <body>
-    <canvas id="map"></canvas>
+    <canvas id="scene" role="img" aria-label="A bronze statue of Demeter, rendered in ASCII, stands in a field of wind-blown wheat, a burning torch raised in one hand and a sheaf in the other. From time to time the sparks from her torch gather into the words: Salus populi suprema lex esto."></canvas>
 
     <div class="overlay corner-tl anim">
         <div class="name"><a href="/">Yogev Angelovici</a></div>
@@ -156,15 +122,7 @@
         <a id="email-link" href="#">email</a>
     </div>
 
-    <div class="overlay corner-br anim d2">
-        <div class="caption">
-            An isochrone map of SF over the course of a day. Time is defined
-            by the faster of public transit or simply walking.
-            <span class="sub" style="display: block;"><a href="writings/collapsing-the-isochrone/">Why this map</a></span>
-        </div>
-    </div>
-
-    <script src="assets/map.js"></script>
+    <script src="assets/demeter.js"></script>
     <script>
         // Assemble the address at runtime so it never appears in the
         // page source for harvesters to scrape.
