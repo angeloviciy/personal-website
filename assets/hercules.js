@@ -106,7 +106,13 @@
     paint.width = SW;
     paint.height = SH;
 
-    S = Math.min(H, W * 1.25) * zoom;
+    // On narrow (portrait) screens, fit the figures to the width, centre
+    // them, and lower the view a little; seed() adds a nearer row of grass
+    // so the bottom edge stays in grass tops rather than bare stems.
+    S = Math.min(H, W * 1.3) * zoom;
+    const narrow = W / S < 1;
+    camX = narrow ? 0.07 : 0;
+    camY = Math.min(HORIZON, 1.25 - (1 - HORIZON) * (H / S));
     seed();
     buildBanner();
     bgCache = cacheLayer(paintBackground);
@@ -142,7 +148,7 @@
     for (const [o, c] of stops) grd.addColorStop(o, c);
     return grd;
   }
-  const visible = () => [-W / 2 / S - 0.1, W / 2 / S + 0.1];
+  const visible = () => [camX - W / 2 / S - 0.1, camX + W / 2 / S + 0.1];
 
   // A crag: a heap of boulders and slabs, piled higher toward the middle.
   // Each stone is an irregular polygon cut into a lit face (upper left)
@@ -397,8 +403,9 @@
     const [xl, xr] = visible();
     const span = xr - xl;
     trees = [
-      growTree(-0.66, HORIZON + 0.06, 0.5, 1, 0.04),
-      growTree(0.7, HORIZON + 0.07, 0.52, 2, 0.02),
+      // The two oaks close in on narrow screens, to stay in the frame.
+      growTree(Math.max(-0.66, Math.min(-0.42, xl + 0.06)), HORIZON + 0.06, 0.5, 1, 0.04),
+      growTree(Math.min(0.7, Math.max(0.5, xr - 0.06)), HORIZON + 0.07, 0.52, 2, 0.02),
       growTree(-1.04, HORIZON + 0.03, 0.36, 3, 0.3),
       growTree(1.06, HORIZON + 0.03, 0.34, 4, 0.3),
     ].filter((tr) => tr.x > xl - 0.35 && tr.x < xr + 0.35);
@@ -410,16 +417,37 @@
       const d = 0.03 + 0.97 * Math.pow(hash(k, 1, 7), 1.4);
       const x = xl + hash(k, 2, 7) * span;
       if (sparse(x, k, 0.35)) continue;
-      mid.push({ x, base: HORIZON + 0.01 + d * 0.46, h: 0.012 + d * 0.13 * (0.6 + 0.8 * hash(k, 3, 7)), d, ph: hash(k, 4, 7) * 6.28, tone: hash(k, 5, 7), bend: hash(k, 6, 8) - 0.5 });
+      mid.push({ x, base: HORIZON + 0.01 + d * 0.46, h: 0.012 + d * 0.15 * (0.6 + 0.8 * hash(k, 3, 7)), d, ph: hash(k, 4, 7) * 6.28, tone: hash(k, 5, 7), bend: hash(k, 6, 8) - 0.5 });
+    }
+    // A fringe of taller blades just in front of the figures, reaching up to
+    // where they fade out, so legs and paws meet grass and not bare ground.
+    const fadeTop = toWorld([0, FIGURE.fade[0]])[1];
+    const [fx0] = toWorld([0, 0]), [fx1] = toWorld([figure.naturalWidth, 0]);
+    for (let k = 0; k < 140; k++) {
+      const x = fx0 + 0.02 + hash(k, 1, 11) * (fx1 - fx0 - 0.04);
+      const base = STAND_DEPTH + 0.005 + hash(k, 2, 11) * 0.07;
+      const tip = fadeTop + 0.005 + hash(k, 3, 11) * 0.06;
+      mid.push({ x, base, h: base - tip, d: 0.75 + hash(k, 4, 11) * 0.2, ph: hash(k, 5, 11) * 6.28, tone: hash(k, 6, 11), bend: hash(k, 7, 11) - 0.5 });
     }
     mid.sort((a, b) => a.base - b.base);
     const nNear = Math.round(170 * span / 1.6);
     for (let k = 0; k < nNear; k++) {
       const base = 1.06 + hash(k, 1, 8) * 0.3;
-      const tipY = 0.7 + hash(k, 2, 8) * 0.2;
+      const tipY = 0.665 + hash(k, 2, 8) * 0.18;
       const x = xl + hash(k, 3, 8) * span;
       if (sparse(x, k + 7919, 0.55)) continue;
       near.push({ big: true, x, base, h: base - tipY, d: 1, ph: hash(k, 4, 8) * 6.28, tone: hash(k, 5, 8), bend: hash(k, 6, 9) - 0.5 });
+    }
+    // On tall screens the view reaches lower than the near blades' tips:
+    // a nearer row still, whose tips fill the bottom of the frame.
+    const bottom = camY + (1 - HORIZON) * (H / S);
+    if (bottom > 1.02) {
+      const nFront = Math.round(150 * span / 1.6 * Math.min(2, (bottom - 1.0) / 0.12));
+      for (let k = 0; k < nFront; k++) {
+        const base = bottom + 0.05 + hash(k, 1, 10) * 0.25;
+        const tipY = bottom - 0.3 + hash(k, 2, 10) * 0.24;
+        near.push({ big: true, x: xl + hash(k, 3, 10) * span, base, h: base - tipY, d: 1, ph: hash(k, 4, 10) * 6.28, tone: hash(k, 5, 10), bend: hash(k, 6, 10) - 0.5 });
+      }
     }
     near.sort((a, b) => a.base - b.base);
     for (let k = 0; k < 60; k++) seeds.push({ x: xl + hash(k, 1, 9) * span, y: 0.2 + hash(k, 2, 9) * 0.6, s: hash(k, 3, 9), ph: hash(k, 4, 9) * 6.28 });
@@ -497,7 +525,7 @@
     bannerHW = textW / 2;
     letters = [];
     const seen = new Uint8Array(fcols * frows);
-    let x = -textW / 2;
+    let x = camX - textW / 2;
     [...BANNER.text].forEach((c, k) => {
       const x0 = x;
       x += widths[k];
@@ -530,7 +558,7 @@
     const el = document.getElementById("banner-link");
     if (!el) return;
     const sx = (x) => W / 2 + (x - camX) * S, sy = (y) => H * HORIZON + (y - camY) * S;
-    const x0 = -bannerHW - 0.01, x1 = bannerHW + 0.01;
+    const x0 = camX - bannerHW - 0.01, x1 = camX + bannerHW + 0.01;
     const y0 = BANNER.y - BANNER.size, y1 = BANNER.y + BANNER.size;
     el.style.left = sx(x0) + "px";
     el.style.top = sy(y0) + "px";
@@ -689,6 +717,13 @@
     uniform vec4 uB[96];
     uniform float uSeed;
     uniform float uAlpha; // 1: the scene is a cut-out; skip cells it barely covers
+    // For cut-outs: the main painting behind, where partly covered samples
+    // are composited, so the figures fade into the grass and not to white.
+    uniform sampler2D uBack;
+    uniform vec2 uBackPx;    // its size in samples
+    uniform vec2 uBackScale; // its samples per CSS pixel
+    uniform vec2 uCellCss;   // this grid's cell size in CSS pixels
+    uniform vec2 uOrigin;    // this grid's first cell, in cells of the full grid
     out vec4 o;
     float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     void main() {
@@ -700,7 +735,11 @@
       for (int i = 0; i < 6; i++) {
         vec2 px = vec2(c.x * 2.0 + float(i % 2), rowTop * 3.0 + float(i / 2)) + 0.5;
         vec4 t4 = texture(uScene, px / uScenePx);
-        vec3 t = mix(vec3(1.0), t4.rgb, uAlpha > 0.5 ? t4.a : 1.0);
+        vec3 t = t4.rgb;
+        if (uAlpha > 0.5) {
+          vec2 css = (uOrigin + vec2(c.x, rowTop) + (vec2(float(i % 2), float(i / 2)) + 0.5) / vec2(2.0, 3.0)) * uCellCss;
+          t = mix(texture(uBack, css * uBackScale / uBackPx).rgb, t4.rgb, t4.a);
+        }
         cover += t4.a;
         col += t;
         float lum = dot(t, vec3(0.299, 0.587, 0.114));
@@ -880,6 +919,14 @@
       gl.uniform4fv(gl.getUniformLocation(progCell, "uB"), B);
       gl.uniform1f(gl.getUniformLocation(progCell, "uSeed"), Math.floor(t * 0.8) % 97);
       gl.uniform1f(gl.getUniformLocation(progCell, "uAlpha"), cutout ? 1 : 0);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, sceneTex);
+      gl.uniform1i(gl.getUniformLocation(progCell, "uBack"), 1);
+      gl.uniform2f(gl.getUniformLocation(progCell, "uBackPx"), SW, SH);
+      gl.uniform2f(gl.getUniformLocation(progCell, "uBackScale"), SX / cw, SY / ch);
+      gl.uniform2f(gl.getUniformLocation(progCell, "uCellCss"), fcwCss, fchCss);
+      gl.uniform2f(gl.getUniformLocation(progCell, "uOrigin"), fi0, fj0);
+      gl.activeTexture(gl.TEXTURE0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     gl.activeTexture(gl.TEXTURE0);
