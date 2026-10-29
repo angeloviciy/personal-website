@@ -103,10 +103,20 @@
         }
 
         .d2 { animation-delay: 0.2s; }
+
+        /* Laid over the motto in the scene by hercules.js. */
+        .banner-link {
+            position: fixed;
+            z-index: 1;
+            display: block;
+        }
+
     </style>
 </head>
 <body>
-    <canvas id="scene" role="img" aria-label="A bronze statue of Demeter, rendered in ASCII, stands in a field of wind-blown wheat, a burning torch raised in one hand and a sheaf in the other. From time to time the sparks from her torch gather into the words: Salus populi suprema lex esto."></canvas>
+    <canvas id="scene" role="img" aria-label="Hercules wrestles the Nemean lion, after Rubens, rendered in ASCII in a wind-blown meadow below rocks and a forest, with the words above them: It can be done."></canvas>
+
+    <a id="banner-link" class="banner-link" href="https://archive.org/details/dli.ernet.4393/page/n3/mode/2up" target="_blank" rel="noopener noreferrer" aria-label="It can be done."></a>
 
     <div class="overlay corner-tl anim">
         <div class="name"><a href="/">Yogev Angelovici</a></div>
@@ -122,7 +132,7 @@
         <a id="email-link" href="#">email</a>
     </div>
 
-    <script src="assets/demeter.js"></script>
+    <script src="assets/hercules.js"></script>
     <script>
         // Assemble the address at runtime so it never appears in the
         // page source for harvesters to scrape.

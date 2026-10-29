@@ -336,8 +336,8 @@
   // blown away. Every spark's position is a pure function of time, so
   // nothing is stored between frames.
   const EMBER_GLYPHS = "'.`*,'.";
-  const CYCLE = 26; // seconds per gather / hold / scatter cycle
-  const GATHER = 8, HOLD = 13.5, SCATTER = 19.5; // phase starts within a cycle
+  const CYCLE = 40; // seconds per gather / hold / scatter cycle
+  const GATHER = 6, HOLD = 17, SCATTER = 25; // phase starts within a cycle
   const AMBIENT = 46;
   const textMask = document.createElement("canvas");
   let targets = []; // [{x, y, ch, r}] in world units, one per letter cell
@@ -405,7 +405,7 @@
 
   function wordsGlow(t) {
     const u = t - Math.floor(t / CYCLE) * CYCLE;
-    return ease((u - GATHER - 2) / 3) * (1 - ease((u - SCATTER) / 2.5));
+    return ease((u - GATHER - 4) / 7) * (1 - ease((u - SCATTER) / 6));
   }
 
   const cellOf = (x, y) => [
@@ -450,12 +450,12 @@
     if (u < GATHER) return emberData;
     const dir = cycle % 2 ? -1 : 1; // the gust alternates sides each time
     for (const p of targets) {
-      const start = GATHER + p.r * 3.2;
+      const start = GATHER + p.r * 7;
       if (u < start) continue;
-      const dur = 1.5 + hash(p.r * 1e6, 1, 23) * 1.1;
+      const dur = 2.6 + hash(p.r * 1e6, 1, 23) * 1.6;
       const s = (u - start) / dur;
       const span = (p.x - targetXMin) / Math.max(1e-6, targetXMax - targetXMin);
-      const leave = SCATTER + (dir > 0 ? span : 1 - span) * 2.2 + p.r * 0.6;
+      const leave = SCATTER + (dir > 0 ? span : 1 - span) * 5 + p.r * 1.2;
       let x, y, glyph, col;
       if (s < 1) {
         // In flight: a curve up out of the flame, bowed by the wind.
@@ -475,8 +475,10 @@
         col = heatColor(Math.max(0, Math.min(1, glow)));
       } else {
         // Blown away, cooling as it goes.
-        const v = u - leave;
-        if (v > 3.2 || hash(p.r * 1e6, Math.floor(t * 6), 25) < v / 3.2) continue;
+        // Drifts at half speed, so it lingers twice as long on its way out.
+        const w = u - leave;
+        if (w > 6.4 || hash(p.r * 1e6, Math.floor(t * 6), 25) < w / 6.4) continue;
+        const v = w / 2;
         x = p.x + dir * (0.07 * v + 0.03 * v * v) + 0.015 * Math.sin(v * 3 + p.r * 20);
         y = p.y - 0.035 * v - 0.01 * Math.sin(v * 2 + p.r * 9);
         glyph = v < 0.4 ? p.ch : EMBER_GLYPHS[Math.floor(p.r * 50 + t * 4) % EMBER_GLYPHS.length];
