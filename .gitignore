@@ -1,3 +1,5 @@
 .DS_Store
 pipeline/venv/
 pipeline/data/
+# Unpublished: the full Collapsing the Isochrone essay, kept local for now.
+writings/collapsing-the-isochrone/
