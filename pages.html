@@ -182,109 +182,6 @@
             color: rgb(178, 34, 34);
         }
 
-        /* Readings: a shelf of covers, titled on hover */
-        .panel.shelf {
-            max-width: 640px;
-            width: 100%;
-        }
-
-        .shelf.active {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2.75rem 1.75rem;
-        }
-
-        .book {
-            position: relative;
-            display: block;
-            width: 96px;
-            aspect-ratio: 2 / 3;
-            color: var(--fg);
-            text-decoration: none;
-        }
-
-        .book img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* A hairline, so pale covers keep an edge on the white page. */
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
-        }
-
-        .book.plain {
-            border: 1px solid #ddd;
-            padding: 10px 9px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            text-align: left;
-            line-height: 1.3;
-            transition: color 0.2s;
-        }
-
-        .book.plain .t {
-            font-size: 12px;
-            overflow-wrap: break-word;
-        }
-
-        .book.plain .a {
-            font-size: 10px;
-            color: var(--fg-3);
-        }
-
-        a.book.plain:hover {
-            color: rgb(178, 34, 34);
-        }
-
-        .book .caption {
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            white-space: nowrap;
-            line-height: 1.35;
-            padding: 0 0.25rem;
-            background: var(--bg);
-            font-size: 12px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-
-        .book .caption .a {
-            display: block;
-            font-size: 11px;
-            color: var(--fg-3);
-        }
-
-        .book:hover .caption,
-        .book:focus-visible .caption {
-            opacity: 1;
-        }
-
-        /* A full-width line break holding the usual short rule. */
-        .shelf .rule {
-            flex-basis: 100%;
-            width: auto;
-            height: 1px;
-            margin: 0;
-            border: 0;
-            background: linear-gradient(#ddd, #ddd) center / 48px 1px no-repeat;
-        }
-
-        @media (max-width: 480px) {
-            .shelf.active {
-                gap: 2rem 1.25rem;
-            }
-
-            .book {
-                width: 84px;
-            }
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
@@ -326,14 +223,44 @@
             </p>
         </div>
 
-        <!-- Filled from readings.json; see pipeline/fetch_covers.py. -->
-        <div id="readings" class="panel shelf anim"></div>
+        <div id="readings" class="panel list anim">
+            <a class="list-item" href="https://www.docdroid.net/sFE8Iof/clark-natural-born-cyborgs-pdf" target="_blank" rel="noopener noreferrer">
+                Natural-Born Cyborgs
+                <div class="item-sub">Andy Clark</div>
+            </a>
+            <a class="list-item" href="http://hyperreal.org/~mpesce/caiia.html" target="_blank" rel="noopener noreferrer">
+                Ritual and the Virtual
+                <div class="item-sub">Mark Pesce</div>
+            </a>
+            <a class="list-item" href="https://tachilab.org/en/about/telexistence.html" target="_blank" rel="noopener noreferrer">
+                Telexistence
+                <div class="item-sub">Susumu Tachi</div>
+            </a>
+            <a class="list-item" href="https://www.readingdesign.org/open-sky" target="_blank" rel="noopener noreferrer">
+                Open Sky
+                <div class="item-sub">Paul Virilio</div>
+            </a>
+
+            <hr class="rule">
+            <a class="list-item" href="https://monoskop.org/images/e/e3/Beer_Stafford_Designing_Freedom.pdf" target="_blank" rel="noopener noreferrer">
+                Designing Freedom
+                <div class="item-sub">Stafford Beer</div>
+            </a>
+            <a class="list-item" href="https://s3.us-west-1.wasabisys.com/luminist/EB/L/Le%20Guin%20-%20The%20Dispossessed.pdf" target="_blank" rel="noopener noreferrer">
+                The Dispossessed
+                <div class="item-sub">Ursula K. Le Guin</div>
+            </a>
+            <a class="list-item" href="https://nrotc.arizona.edu/sites/default/files/2022-10/Leadership%20-%20GEN%20Matthew%20H.%20Ridgway.pdf" target="_blank" rel="noopener noreferrer">
+                Leadership
+                <div class="item-sub">Gen. Matthew Ridgway</div>
+            </a>
+        </div>
 
         <div id="writings" class="panel list anim">
-            <a class="list-item" href="writings/collapsing-the-isochrone/">
+            <div class="list-item soon">
                 Collapsing the Isochrone
-                <div class="item-sub">Speed and San Francisco</div>
-            </a>
+                <div class="item-sub">Speed and San Francisco &mdash; forthcoming</div>
+            </div>
         </div>
     </div>
 
@@ -357,41 +284,6 @@
 
         window.addEventListener('hashchange', fromHash);
         fromHash();
-
-        // Readings come from readings.json, in its order. An entry with a
-        // "cover" shows that image from assets/covers/; one without is an
-        // outlined card with its title. {"break": true} draws a divider.
-        fetch('readings.json').then(r => r.json()).then(entries => {
-            const shelf = document.getElementById('readings');
-            for (const e of entries) {
-                if (e.break) {
-                    const hr = document.createElement('hr');
-                    hr.className = 'rule';
-                    shelf.append(hr);
-                    continue;
-                }
-                const a = document.createElement('a');
-                a.href = e.url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                const t = Object.assign(document.createElement('span'), { className: 't', textContent: e.title });
-                const by = Object.assign(document.createElement('span'), { className: 'a', textContent: e.author });
-                if (e.cover) {
-                    a.className = 'book';
-                    a.setAttribute('aria-label', e.title + ', ' + e.author);
-                    const img = Object.assign(document.createElement('img'), {
-                        src: 'assets/covers/' + e.cover, alt: '', loading: 'lazy', decoding: 'async',
-                    });
-                    const cap = Object.assign(document.createElement('span'), { className: 'caption' });
-                    cap.append(t, by);
-                    a.append(img, cap);
-                } else {
-                    a.className = 'book plain';
-                    a.append(t, by);
-                }
-                shelf.append(a);
-            }
-        });
 
         // Assemble the address at runtime so it never appears in the
         // page source for harvesters to scrape.
