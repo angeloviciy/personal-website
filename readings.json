@@ -1,0 +1,11 @@
+[
+  {"title": "Natural-Born Cyborgs", "author": "Andy Clark", "url": "https://www.docdroid.net/sFE8Iof/clark-natural-born-cyborgs-pdf", "cover": "clark-natural-born-cyborgs.jpg"},
+  {"title": "Ritual and the Virtual", "author": "Mark Pesce", "url": "http://hyperreal.org/~mpesce/caiia.html", "cover": false},
+  {"title": "Telexistence", "author": "Susumu Tachi", "url": "https://tachilab.org/en/about/telexistence.html", "cover": "tachi-telexistence.jpg"},
+  {"title": "Open Sky", "author": "Paul Virilio", "url": "https://www.readingdesign.org/open-sky", "cover": "virilio-open-sky.jpg"},
+  {"break": true},
+  {"title": "Designing Freedom", "author": "Stafford Beer", "url": "https://monoskop.org/images/e/e3/Beer_Stafford_Designing_Freedom.pdf", "cover": "beer-designing-freedom.jpg"},
+  {"title": "The Dispossessed", "author": "Ursula K. Le Guin", "url": "https://s3.us-west-1.wasabisys.com/luminist/EB/L/Le%20Guin%20-%20The%20Dispossessed.pdf", "cover": "le-guin-the-dispossessed.jpg"},
+  {"title": "Leadership", "author": "Gen. Matthew Ridgway", "url": "https://nrotc.arizona.edu/sites/default/files/2022-10/Leadership%20-%20GEN%20Matthew%20H.%20Ridgway.pdf", "cover": false},
+  {"title": "Inventing the Future", "author": "Nick Srnicek & Alex Williams", "url": "http://pinguet.free.fr/srnicek15.pdf", "cover": "srnicek-williams-inventing-the-future.jpg"}
+]
