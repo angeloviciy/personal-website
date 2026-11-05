@@ -774,7 +774,10 @@
       }
       // Colour reads lighter through a glyph's thin strokes than as a
       // flat fill, so deepen it a little.
-      vec3 g = pow(col, vec3(1.6));
+      vec3 g = pow(col, vec3(1.4));
+      // Then push saturation so the colours pop against the white.
+      float y = dot(g, vec3(0.299, 0.587, 0.114));
+      g = clamp(mix(vec3(y), g, 1.45), 0.0, 1.0);
       // In cut-out mode, alpha 0 means "not covered", so glyphs count from 1.
       o = vec4(g, float(bi + (uAlpha > 0.5 ? 1 : 0)) / 255.0);
     }`;
